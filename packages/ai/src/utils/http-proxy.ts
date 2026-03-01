@@ -8,6 +8,8 @@
 if (typeof process !== "undefined" && process.versions?.node) {
 	import("undici").then((m) => {
 		const { EnvHttpProxyAgent, setGlobalDispatcher } = m;
-		setGlobalDispatcher(new EnvHttpProxyAgent());
+		// Disable default timeouts (300s) that kill long-running LLM streaming responses.
+		// Individual non-streaming requests set their own AbortSignal.timeout() as needed.
+		setGlobalDispatcher(new EnvHttpProxyAgent({ bodyTimeout: 0, headersTimeout: 0 }));
 	});
 }
